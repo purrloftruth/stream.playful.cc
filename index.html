@@ -1,4 +1,151 @@
 <!DOCTYPE html>
 <html>
-HELLO WORLD
+  <head>
+    <title>Playful</title>
+
+    <style type="text/css">
+      body {
+        padding: 0;
+        margin: 0;
+        background-color: #F38;
+      }
+
+      div#enclosure {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+      div.clicker {
+        color: #FFF;
+        font-size: 192pt;
+        height: 192pt;
+        width: 192pt;
+        margin: 0 auto;
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -96pt;
+        margin-left: -96pt;
+
+      }
+
+      span.fa {
+        position: absolute;
+        width: 192pt;
+        height: 192pt;
+        visibility: hidden;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      span.fa-circle-o-notch {
+        visibility: visible;
+        -webkit-animation-name: spin;
+        -webkit-animation-duration: 1800ms;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: linear;
+        -moz-animation-name: spin;
+        -moz-animation-duration: 1800ms;
+        -moz-animation-iteration-count: infinite;
+        -moz-animation-timing-function: linear;
+        -ms-animation-name: spin;
+        -ms-animation-duration: 18000ms;
+        -ms-animation-iteration-count: infinite;
+        -ms-animation-timing-function: linear;
+      }
+
+      /* thanks to
+         http://stackoverflow.com/questions/14859322/css3-spin-animation */
+
+
+      @-moz-keyframes spin {
+        from { -moz-transform: rotate(0deg); }
+        to { -moz-transform: rotate(360deg); }
+      }
+      @-webkit-keyframes spin {
+        from { -webkit-transform: rotate(0deg); }
+        to { -webkit-transform: rotate(360deg); }
+      }
+      @keyframes spin {
+        from {transform:rotate(0deg);}
+        to {transform:rotate(360deg);}
+      }
+
+      .player-enclosure {
+        display: none;
+      }
+    </style>
+
+    <script src="https://use.fontawesome.com/b5eb70532f.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/mediaelement/mediaelement-and-player.js"></script>
+
+    <link rel="stylesheet" href="js/mediaelement/mediaelementplayer.css" />
+  </head>
+
+  <body>
+    <div id="enclosure">
+      <div class="player-enclosure">
+        <audio src="http://stream.playful.cc:8000/audio" id="player"></audio>
+      </div>
+
+      <div class="clicker">
+        <span id="b-load" class="b fa fa-circle-o-notch"></span>
+        <span id="b-pause" class="b fa fa-pause-circle" onclick="player.pause();"></span>
+        <span id="b-play" class="b fa fa-play-circle-o" onclick="player.play();"></span>
+      </div>
+
+      <div class="now-playing">
+        <span class="now-playing-data"></span>
+      </div>
+    </div>
+
+    <script>
+        var player = new MediaElementPlayer('#player', {
+          startVolume: 1.0,
+          alwaysShowControls: false,
+          /* success: function(mediaElement) {
+            mediaElement.addEventListener('playing', function() {
+              console.log("we have liftoff");
+              $('#b-load').style.visibility = "hidden";
+            }, false);
+            mediaElement.addEventListener('play', function() {
+              console.log("PLAY");
+              $('.b').style.visibility = "hidden";
+              $('#b-pause').style.visibility = "visible";
+            }, false);
+            mediaElement.addEventListener('pause', function() {
+              console.log("PAUSE");
+              $('.b').style.visibility = "hidden";
+              $('#b-play').style.visibility = "visible";
+            }, false);
+            mediaElement.addEventListener('loadedmetadata', function() {
+              console.log("metadata");
+            }, false);
+          },*/
+          error: function() {
+            //alert('Error setting media!');
+          }
+        });
+
+        $('#player').bind("stalled", function() {
+          console.log("buffering");
+          $('.b').css("visibility", "hidden");
+          $('#b-load').css("visibility", "visible");
+        });
+        $('#player').bind("playing", function() {
+          console.log("we have liftoff");
+          $('.b').css("visibility", "hidden");
+          $('#b-pause').css("visibility", "visible");
+        });
+        $('#player').bind("pause", function() {
+          console.log("we are paused");
+          $('.b').css("visibility", "hidden");
+          $('#b-play').css("visibility", "visible");
+        });
+
+        player.play();
+    </script>
+  </body>
 </html>
