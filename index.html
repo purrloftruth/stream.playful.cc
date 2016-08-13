@@ -106,28 +106,6 @@
         var player = new MediaElementPlayer('#player', {
           startVolume: 1.0,
           alwaysShowControls: false,
-          /* success: function(mediaElement) {
-            mediaElement.addEventListener('playing', function() {
-              console.log("we have liftoff");
-              $('#b-load').style.visibility = "hidden";
-            }, false);
-            mediaElement.addEventListener('play', function() {
-              console.log("PLAY");
-              $('.b').style.visibility = "hidden";
-              $('#b-pause').style.visibility = "visible";
-            }, false);
-            mediaElement.addEventListener('pause', function() {
-              console.log("PAUSE");
-              $('.b').style.visibility = "hidden";
-              $('#b-play').style.visibility = "visible";
-            }, false);
-            mediaElement.addEventListener('loadedmetadata', function() {
-              console.log("metadata");
-            }, false);
-          },*/
-          error: function() {
-            //alert('Error setting media!');
-          }
         });
 
         $('#player').bind("stalled", function() {
