@@ -48,7 +48,7 @@
         font-size: 32pt;
       }
 
-      span.fa {
+      span.b {
         position: absolute;
         width: 192pt;
         height: 192pt;
@@ -57,7 +57,11 @@
         text-align: center;
       }
 
-      span.fa-circle-o-notch {
+      span#b-pause, span#b-play {
+        cursor: pointer;
+      }
+
+      span#b-load {
         visibility: visible;
         -webkit-animation-name: spin;
         -webkit-animation-duration: 1800ms;
@@ -230,8 +234,8 @@
 
       <div class="clicker">
         <span id="b-load" class="b fa fa-circle-o-notch"></span>
-        <span id="b-pause" class="b fa fa-pause-circle" onclick="player.pause();"></span>
-        <span id="b-play" class="b fa fa-play-circle-o" onclick="player.play();"></span>
+        <span id="b-pause" class="b fa fa-pause-circle" onclick="pPause();"></span>
+        <span id="b-play" class="b fa fa-play-circle-o" onclick="pPlay();"></span>
       </div>
 
       <div class="now-playing">
@@ -249,46 +253,77 @@
     </div>
 
     <script>
-        function setVolume() {
+      var gPaused = false;
+      var oldText = "";
+
+      function pPlay() {
+        console.log("pPlay");
+        gPaused = false;
+        $("#player").prop("volume", $("#volume").val());
+        $("#player").trigger("play");
+        $('.b').css("visibility", "hidden");
+        $('#b-pause').css("visibility", "visible");
+        $("#now-playing-data").text(oldText);
+        updateTrack();
+        trackUpdateCallback = window.setInterval(updateTrack, 5000);
+      }
+
+      function pPause() {
+        console.log("pPause");
+        gPaused = true;
+        $("#player").prop("volume", 0);
+        $('.b').css("visibility", "hidden");
+        $('#b-play').css("visibility", "visible");
+        clearInterval(trackUpdateCallback);
+        oldText = $("#now-playing-data").text();
+        $("#now-playing-data").text("Paused");
+      }
+      function setVolume() {
+        if (!gPaused) {
           console.log("Volume call " + $("#volume").val());
           $("#player").prop("volume", $("#volume").val());
+        } else {
+          console.log("Volume called but we are paused");
         }
+      }
 
-        var statusUrl = "http://stream.playful.cc/stream/status-json.xsl"
+      var statusUrl = "http://stream.playful.cc/stream/status-json.xsl"
 
-        function updateTrack() {
-          $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
-            if (data.icestats.source.title.localeCompare($("#now-playing-data").text())) {
-              console.log("updating title to " + data.icestats.source.title);
-              $("#now-playing-data").text(data.icestats.source.title);
-            } else {
-              /* console.log("title has not changed"); */
-            }
-          });
-        }
-        var trackUpdateCallback;
-
-        $('#player').bind("stalled", function() {
-          console.log("buffering");
-          $('.b').css("visibility", "hidden");
-          $('#b-load').css("visibility", "visible");
+      function updateTrack() {
+        $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
+          if (data.icestats.source.title.localeCompare($("#now-playing-data").text())) {
+            console.log("updating title to " + data.icestats.source.title);
+            $("#now-playing-data").text(data.icestats.source.title);
+          } else {
+            /* console.log("title has not changed"); */
+          }
         });
-        $('#player').bind("playing", function() {
-          console.log("we have liftoff");
-          $('.b').css("visibility", "hidden");
-          $('#b-pause').css("visibility", "visible");
-          updateTrack();
-          trackUpdateCallback = window.setInterval(updateTrack, 5000);
-        });
-        $('#player').bind("pause", function() {
-          console.log("we are paused");
-          $('.b').css("visibility", "hidden");
-          $('#b-play').css("visibility", "visible");
-          clearInterval(trackUpdateCallback);
-          $("#now-playing-data").text("Paused");
-        });
+      }
+      var trackUpdateCallback;
 
-        $('#player').trigger("play");
+      $('#player').bind("stalled", function() {
+        console.log("buffering");
+        $('.b').css("visibility", "hidden");
+        $('#b-load').css("visibility", "visible");
+      });
+      $('#player').bind("playing", function() {
+        console.log("we have liftoff");
+        $('.b').css("visibility", "hidden");
+        $('#b-pause').css("visibility", "visible");
+        $("#now-playing-data").text(oldText);
+        updateTrack();
+        trackUpdateCallback = window.setInterval(updateTrack, 5000);
+      });
+      $('#player').bind("pause", function() {
+        console.log("we are actually paused");
+        $('.b').css("visibility", "hidden");
+        $('#b-play').css("visibility", "visible");
+        clearInterval(trackUpdateCallback);
+        oldText = $("#now-playing-data").text();
+        $("#now-playing-data").text("Paused");
+      });
+
+      $('#player').trigger("play");
     </script>
   </body>
 </html>
