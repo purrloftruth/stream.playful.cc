@@ -9,6 +9,8 @@
         padding: 0;
         margin: 0;
         background-color: #F38;
+        color: #FFF;
+        font-family: "Lato", Helvetica, sans-serif;
       }
 
       div#enclosure {
@@ -29,6 +31,20 @@
         margin-top: -96pt;
         margin-left: -96pt;
 
+      }
+
+      div.now-playing {
+        width: 80%;
+        text-align: center;
+        position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, 96pt);
+      }
+
+      span#now-playing-data {
+        font-weight: bold;
+        font-size: 32pt;
       }
 
       span.fa {
@@ -82,13 +98,14 @@
     <script src="js/jquery.js"></script>
     <script src="js/mediaelement/mediaelement-and-player.js"></script>
 
-    <link rel="stylesheet" href="js/mediaelement/mediaelementplayer.css" />
+    <script src="https://use.typekit.net/isy1nuu.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
   </head>
 
   <body>
     <div id="enclosure">
       <div class="player-enclosure">
-        <audio src="http://stream.playful.cc:8000/audio" id="player"></audio>
+        <audio src="http://stream.playful.cc/stream/audio" id="player"></audio>
       </div>
 
       <div class="clicker">
@@ -98,7 +115,7 @@
       </div>
 
       <div class="now-playing">
-        <span class="now-playing-data"></span>
+        <span id="now-playing-data"></span>
       </div>
     </div>
 
@@ -107,6 +124,20 @@
           startVolume: 1.0,
           alwaysShowControls: false,
         });
+
+        var statusUrl = "http://stream.playful.cc/stream/status-json.xsl"
+
+        function updateTrack() {
+          $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
+            if (data.icestats.source.title.localeCompare($("#now-playing-data").text())) {
+              console.log("updating title to " + data.icestats.source.title);
+              $("#now-playing-data").text(data.icestats.source.title);
+            } else {
+              /* console.log("title has not changed"); */
+            }
+          });
+        }
+        var trackUpdateCallback;
 
         $('#player').bind("stalled", function() {
           console.log("buffering");
@@ -117,11 +148,15 @@
           console.log("we have liftoff");
           $('.b').css("visibility", "hidden");
           $('#b-pause').css("visibility", "visible");
+          updateTrack();
+          trackUpdateCallback = window.setInterval(updateTrack, 5000);
         });
         $('#player').bind("pause", function() {
           console.log("we are paused");
           $('.b').css("visibility", "hidden");
           $('#b-play').css("visibility", "visible");
+          clearInterval(trackUpdateCallback);
+          $("#now-playing-data").text("Paused");
         });
 
         player.play();
