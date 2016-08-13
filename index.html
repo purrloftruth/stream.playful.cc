@@ -229,7 +229,7 @@
   <body>
     <div id="enclosure">
       <div class="player-enclosure">
-        <audio src="http://stream.playful.cc/stream/audio" id="player" type="audio/mp3"></audio>
+        <audio src="http://stream-source.playful.cc:21014/audio" id="player" type="audio/mp3"></audio>
       </div>
 
       <div class="clicker">
@@ -260,7 +260,7 @@
         console.log("pPlay");
         gPaused = false;
         $("#player").prop("volume", $("#volume").val());
-        $("#player").trigger("play");
+        $("#player").trigger("play"); // just in case.
         $('.b').css("visibility", "hidden");
         $('#b-pause').css("visibility", "visible");
         $("#now-playing-data").text(oldText);
@@ -287,7 +287,7 @@
         }
       }
 
-      var statusUrl = "http://stream.playful.cc/stream/status-json.xsl"
+      var statusUrl = "http://stream-source.playful.cc:21014/status-json.xsl"
 
       function updateTrack() {
         $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
