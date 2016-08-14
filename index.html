@@ -4,6 +4,10 @@
   <head>
     <title>Playful</title>
 
+    <script>
+      var streamBaseURL = "http://stream-source.playful.cc:21014";
+    </script>
+
     <style type="text/css">
       body {
         padding: 0;
@@ -288,13 +292,45 @@
         }
       }
 
-      var statusUrl = "http://stream-source.playful.cc:21014/status-json.xsl"
+      var statusUrl = streamBaseURL + "/status-json.xsl"
 
       function updateTrack() {
+        var theTitle = "";
+        var orderedMountTrackPreference = ["/audio", "/automation"];
+        var orderedMountTrackData = [];
+        $.each(orderedMountTrackPreference, function(i,v) {
+          orderedMountTrackData.push("");
+        });
+        console.log(orderedMountTrackPreference);
         $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
-          if (data.icestats.source.title.localeCompare($("#now-playing-data").text())) {
-            console.log("updating title to " + data.icestats.source.title);
-            $("#now-playing-data").text(data.icestats.source.title);
+          // console.log(data);
+          $.each(data.icestats.source, function(i,v) {
+            for (var j = 0; j < orderedMountTrackPreference.length; j++) {
+              var w = orderedMountTrackPreference[j];
+              console.log("#@FUCK", j, w);
+              if (v.listenurl.localeCompare(streamBaseURL + w) == 0) {
+                console.log(v.listenurl, v.title);
+                console.log("ice", i);
+                console.log("pref", j);
+                orderedMountTrackData[j] = v.title;
+              }
+            }
+          });
+          console.log(orderedMountTrackData);
+          for (var i = 0; i < orderedMountTrackData.length; i++) {
+            var v = orderedMountTrackData[i];
+            console.log(v);
+            if (v != undefined && v.localeCompare("") != 0) {
+              theTitle = v;
+              break;
+            }
+          }
+          if (theTitle.localeCompare($("#now-playing-data").text()) != 0) {
+            if (theTitle.localeCompare("") == 0) {
+              console.log("Could not find title. Using blank data")
+            }
+            console.log("updating title to " + theTitle);
+            $("#now-playing-data").text(theTitle);
           } else {
             /* console.log("title has not changed"); */
           }
