@@ -296,35 +296,38 @@
 
       function updateTrack() {
         var theTitle = "";
+        // set up the order we want to see these in
         var orderedMountTrackPreference = ["/audio", "/automation"];
         var orderedMountTrackData = [];
         $.each(orderedMountTrackPreference, function(i,v) {
           orderedMountTrackData.push("");
         });
-        console.log(orderedMountTrackPreference);
+
+        // fetch & run thru data
         $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
           // console.log(data);
+          // for each source,
           $.each(data.icestats.source, function(i,v) {
+            // find where it falls in the preference list
             for (var j = 0; j < orderedMountTrackPreference.length; j++) {
               var w = orderedMountTrackPreference[j];
-              console.log("#@FUCK", j, w);
               if (v.listenurl.localeCompare(streamBaseURL + w) == 0) {
-                console.log(v.listenurl, v.title);
-                console.log("ice", i);
-                console.log("pref", j);
+                // save the data in its ordered place
                 orderedMountTrackData[j] = v.title;
               }
             }
           });
-          console.log(orderedMountTrackData);
+
+          // run through all the data
           for (var i = 0; i < orderedMountTrackData.length; i++) {
             var v = orderedMountTrackData[i];
-            console.log(v);
+            // take the first one that has data and run with it
             if (v != undefined && v.localeCompare("") != 0) {
               theTitle = v;
               break;
             }
           }
+          // only update data if it has actually changed
           if (theTitle.localeCompare($("#now-playing-data").text()) != 0) {
             if (theTitle.localeCompare("") == 0) {
               console.log("Could not find title. Using blank data")
