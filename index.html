@@ -21,6 +21,16 @@
         overflow-y: hidden;
       }
 
+      noscript#ns-error {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 32pt;
+        width: 80%;
+        text-align: center;
+      }
+
       div#enclosure {
         position: relative;
         width: 100vw;
@@ -136,9 +146,15 @@
 
       .wf-loading #enclosure {
         visibility: hidden;
+        opacity: 0;
       }
       .wf-active #enclosure {
         visibility: visible;
+        opacity: 1;
+        transition: opacity 0.25s ease;
+        -webkit-transition: opacity 0.25s ease;
+        -moz-transition: opacity 0.25s ease;
+        -ms-transition: opacity 0.25s ease;
       }
 
       /* thanks to http://danielstern.ca/range.css  */
@@ -231,7 +247,11 @@
     <script>try{Typekit.load({ async: false });}catch(e){}</script>
   </head>
 
-  <body>
+  <body class="wf-loading">
+    <noscript id="ns-error">
+      <p>This site requires Javascript to be enabled.</p>
+    </noscript>
+
     <div id="enclosure">
       <div class="player-enclosure">
         <audio src="http://stream-source.playful.cc:21014/audio" id="player" type="audio/mp3"></audio>
