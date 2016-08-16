@@ -351,6 +351,11 @@
               break;
             }
           }
+
+          // replace hyphens with em-dashes
+          // other hyphens you may like: - – — ― ‒ − ﹘
+          theTitle = theTitle.replace(" - ", " — ");
+
           // only update data if it has actually changed
           if (theTitle.localeCompare($("#now-playing-data").text()) != 0) {
             if (theTitle.localeCompare("") == 0) {
