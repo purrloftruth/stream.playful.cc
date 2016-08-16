@@ -3,6 +3,7 @@
 <html class="wf-loading">
   <head>
     <title>Playful</title>
+    <meta charset="UTF-8">
 
     <script>
       var streamBaseURL = "http://stream-source.playful.cc:21014";
@@ -36,6 +37,18 @@
         width: 100vw;
         height: 100vh;
       }
+
+      div#logo-space {
+        margin: 1em;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 64px;
+        height: 64px;
+        background-image: url(images/playful.svg);
+        background-size: 100%;
+      }
+
       div.clicker {
         color: #FFF;
         font-size: 192pt;
@@ -253,14 +266,15 @@
     </noscript>
 
     <div id="enclosure">
+      <a id="logo-link" href="http://playful.cc/" title="Back to playful.cc/"><div id="logo-space"></div></a>
       <div class="player-enclosure">
         <audio src="http://stream-source.playful.cc:21014/audio" id="player" type="audio/mp3"></audio>
       </div>
 
       <div class="clicker">
-        <span id="b-load" class="b fa fa-circle-o-notch"></span>
-        <span id="b-pause" class="b fa fa-pause-circle" onclick="pPause();"></span>
-        <span id="b-play" class="b fa fa-play-circle-o" onclick="pPlay();"></span>
+        <span id="b-load" class="b fa fa-circle-o-notch" title="Buffering..."></span>
+        <span id="b-pause" class="b fa fa-pause-circle" title="Pause" onclick="pPause();"></span>
+        <span id="b-play" class="b fa fa-play-circle-o" title="Play" onclick="pPlay();"></span>
       </div>
 
       <div class="now-playing">
