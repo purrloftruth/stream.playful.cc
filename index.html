@@ -139,7 +139,7 @@
         opacity: 0.5;
       }
 
-      div.footer span {
+      div.footer span#footer-text {
         font-size: 0.8em;
 
       }
@@ -272,12 +272,16 @@
       </div>
 
       <div class="footer">
-        <span>&copy; 2016 Playful Collective. All Rights Reserved. Audio content streamed is &#8471; and &copy; its owner.</span>
+        <span id="footer-text">&copy; <span id="year"></span> Playful. All Rights Reserved. Audio content streamed is &#8471; and &copy; its owner.</span>
       </div>
 
     </div>
 
     <script>
+      $(document).ready(function(){
+        $("#year").html(new Date().getFullYear());
+      });
+
       var gPaused = false;
       var oldText = "";
 
