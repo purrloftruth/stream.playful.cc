@@ -10,6 +10,11 @@
     </script>
 
     <style type="text/css">
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
       body {
         padding: 0;
         margin: 0;
@@ -126,6 +131,15 @@
 
       .player-enclosure {
         display: none;
+      }
+
+      html.debug .player-enclosure {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 128pt);
+        z-index: 99999;
       }
 
       div.volume-control {
@@ -268,7 +282,7 @@
     <div id="enclosure">
       <a id="logo-link" href="http://playful.cc/" title="Back to playful.cc/"><div id="logo-space"></div></a>
       <div class="player-enclosure">
-        <audio src="http://stream-source.playful.cc:21014/audio" id="player" type="audio/mp3"></audio>
+        <audio controls src="http://stream-source.playful.cc:21014/audio" id="player" type="audio/mp3"></audio>
       </div>
 
       <div class="clicker">
@@ -286,7 +300,7 @@
       </div>
 
       <div class="footer">
-        <span id="footer-text">&copy; <span id="year"></span> Playful. All Rights Reserved. Audio content streamed is &#8471; and &copy; its owner.</span>
+        <span id="footer-text"><span onclick="toggleDebug();">&copy;</span> <span id="year"></span> Playful. All Rights Reserved. Audio content streamed is &#8471; and &copy; its owner.</span>
       </div>
 
     </div>
@@ -298,6 +312,10 @@
 
       var gPaused = false;
       var oldText = "";
+
+      function toggleDebug() {
+        $("html").toggleClass("debug");
+      }
 
       function pPlay() {
         console.log("pPlay");
