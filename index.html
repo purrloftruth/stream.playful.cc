@@ -14,7 +14,7 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      
+
       body {
         padding: 0;
         margin: 0;
@@ -25,6 +25,10 @@
 
         overflow-x: hidden;
         overflow-y: hidden;
+      }
+
+      svg {
+        fill: currentColor;
       }
 
       noscript#ns-error {
@@ -73,9 +77,9 @@
         width: 80%;
         text-align: center;
         position: absolute;
- top: 50%;
- left: 50%;
- transform: translate(-50%, 64pt);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 64pt);
       }
 
       span#now-playing-data {
@@ -155,6 +159,21 @@
         padding: 0;
         width: 128px;
         height: 15px;
+      }
+
+      div.airplay {
+        position: absolute;
+        bottom: 0%;
+        left: 50%;
+        margin: 0;
+        padding: 1em;
+        height: 15px;
+
+      }
+
+      div.guideline {
+        visibility: hidden;
+        
       }
 
       div.footer {
@@ -295,8 +314,14 @@
         <span id="now-playing-data"></span>
       </div>
 
+      <div class="guideline"></div>
+
       <div class="volume-control">
         <input id="volume" oninput="setVolume();" type="range" min="0" max="1" step="0.01" value="1">
+      </div>
+
+      <div class="airplay">
+        <!-- coming soon? -->
       </div>
 
       <div class="footer">
