@@ -21,6 +21,8 @@
     <meta name="twitter:image" content="http://stream.playful.cc/images/card.png">
     <meta name="twitter:image:alt" content="Playful">
 
+    <base target="_blank">
+
     <style type="text/css">
       * {
         -webkit-font-smoothing: antialiased;
@@ -57,6 +59,14 @@
         position: relative;
         width: 100vw;
         height: 100vh;
+      }
+
+      canvas#scope-canvas {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: -999;
+
       }
 
       div#logo-space {
@@ -106,6 +116,7 @@
         visibility: hidden;
         margin: 0 auto;
         text-align: center;
+        opacity: 0.5;
       }
 
       span#b-pause, span#b-play {
@@ -173,16 +184,6 @@
         height: 15px;
       }
 
-      div.airplay {
-        position: absolute;
-        bottom: 0%;
-        left: 50%;
-        margin: 0;
-        padding: 1em;
-        height: 15px;
-
-      }
-
       div.guideline {
         visibility: hidden;
 
@@ -194,12 +195,47 @@
         right: 0%;
         margin: 0;
         padding: 0.66em;
-        opacity: 0.5;
+        font-size: 0.8em;
       }
 
       div.footer span#footer-text {
-        font-size: 0.8em;
+        opacity: 0.5;
+      }
 
+
+      div.footer span#footer-text .fa.fa-info-circle {
+        vertical-align: middle;
+      }
+
+      div.footer #infobox {
+        background: rgba(255,255,255,0.25);
+        border-radius: 8px 8px;
+        border: 2px solid rgba(255,255,255,1);
+        margin-bottom: 0.5em;
+        padding: 0.5em;
+        width: 50%;
+        margin-left: auto;
+        display: none;
+      }
+
+      div.footer #infobox a {
+        background-color: rgba(255,255,255,1);
+        color: #F38;
+        padding: 0.0em 0.25em;
+        border-radius: 4px 4px;
+        text-decoration: none;
+      }
+
+      div.footer #infobox a:hover {
+        background-color: rgba(255,255,255,0.75);
+      }
+
+      div.footer #infobox p:first-child {
+        -webkit-margin-before:0em;
+      }
+
+      div.footer #infobox p:last-child {
+        -webkit-margin-after:0em;
       }
 
       .wf-loading #enclosure {
@@ -303,6 +339,7 @@
     <script src="js/jquery.js"></script>
     <script src="https://use.typekit.net/isy1nuu.js"></script>
     <script>try{Typekit.load({ async: false });}catch(e){}</script>
+    <script src="js/vectorscope.js"></script>
   </head>
 
   <body>
@@ -311,6 +348,8 @@
     </noscript>
 
     <div id="enclosure">
+      <canvas id="scope-canvas"></canvas>
+
       <a id="logo-link" href="http://playful.cc/" title="Back to playful.cc/"><div id="logo-space"></div></a>
       <div class="player-enclosure">
         <audio controls src="http://stream-source.playful.cc:21014/audio" id="player" type="audio/mp3"></audio>
@@ -332,19 +371,19 @@
         <input id="volume" oninput="setVolume();" type="range" min="0" max="1" step="0.01" value="1">
       </div>
 
-      <div class="airplay">
-        <!-- coming soon? -->
-      </div>
-
       <div class="footer">
-        <span id="footer-text"><span onclick="toggleDebug();">&copy;</span> <span id="year"></span> Playful. All Rights Reserved. Audio content streamed is &#8471; and &copy; its owner.</span>
+        <div id="infobox">
+          <p><a href="https://github.com/wonaldson/stream.playful.cc">Frontend</a> &copy; <span class="year"></span> Playful.</p>
+          <p>Oscilloscope adapted from <a href="https://github.com/FMS-Cat/vectorscope">Vectorscope</a> by <a href="http://fms-cat.github.io">FMS-Cat</a>.</p>
+        </div>
+        <span id="footer-text"><span onclick="toggleDebug();">&copy;</span> <span class="year"></span> Playful. All Rights Reserved. Audio content streamed is &#8471; and &copy; its owner. <span class="fa fa-info-circle" onclick="$('#infobox').fadeToggle(200);"></span></span>
       </div>
 
     </div>
 
     <script>
       $(document).ready(function(){
-        $("#year").html(new Date().getFullYear());
+        $(".year").html(new Date().getFullYear());
       });
 
       var gPaused = false;
@@ -353,6 +392,38 @@
       function toggleDebug() {
         $("html").toggleClass("debug");
       }
+
+      // Vectorscope code
+
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      var audio = new AudioContext();
+
+      var audioElement = document.getElementById('player');
+      var source = audio.createMediaElementSource(audioElement);
+
+      var canvas = document.getElementById('scope-canvas');
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      function initialize() {
+        // Register an event listener to call the resizeCanvas() function
+        // each time the window is resized.
+        window.addEventListener('resize', resizeCanvas, false);
+        // Draw canvas border for the first time.
+        resizeCanvas();
+      }
+
+      initialize();
+
+      var vectorscope = new Vectorscope( audio, canvas );
+      source.connect( vectorscope.node );
+
+      vectorscope.node.connect( audio.destination );
+
+      console.log(audio.destination);
 
       function pPlay() {
         console.log("pPlay");
