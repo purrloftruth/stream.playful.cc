@@ -398,7 +398,11 @@
 
         // fetch & run thru data
         $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
-          // console.log(data);
+          // if we've just started icecast and only have one
+          // mountpoint, we need to manually make this into an array
+          if (!Array.isArray(data.icestats.source)) {
+              data.icestats.source = [data.icestats.source];
+          }
           // for each source,
           $.each(data.icestats.source, function(i,v) {
             // find where it falls in the preference list
