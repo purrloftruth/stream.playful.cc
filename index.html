@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
 
     <script>
-    var streamBaseURL = "//icecast-source.i.playful.cc";
+    var streamBaseURL = "https://icecast-source.i.playful.cc";
     </script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -463,6 +463,7 @@
     var shouldUpdateTitles = false;
     var currentlyUpdatingTitle = false;
     var trackDataUpdateInterval = 5000; // milliseconds
+    var lastTrackDataUpdate = 0;
 
     function updateLDisplay(l) {
         if (!["timeupdate","progress","durationchange"].includes(l)) {
@@ -489,21 +490,18 @@
             $('#player').prop("currentTime", curTime + seekTime);
         }
         $("#player").trigger("play");
-        $('.b').css("visibility", "hidden");
-        $('#b-load').css("visibility", "visible");
-        $("#now-playing-data").text(oldText);
     }
 
     function pPause() {
         console.log("pPause()");
         $("#player").trigger("pause");
-        $('.b').css("visibility", "hidden");
-        $('#b-play').css("visibility", "visible");
-        clearInterval(trackUpdateCallback);
-        shouldUpdateTitles = false;
-        oldText = $("#now-playing-data").text();
-        $("#now-playing-data").text("Paused");
         timePaused = new Date().getTime() / 1000;
+    }
+
+    function manuallyUpdateTrack() {
+        if (Date.now() - lastTrackDataUpdate > trackDataUpdateInterval/2) {
+            updateTrack();
+        }
     }
 
     function audioIsPlaying() {
@@ -513,14 +511,17 @@
             $('#b-pause').css("visibility", "visible");
             $("#now-playing-data").text(oldText);
             shouldUpdateTitles = true;
-            updateTrack();
-            trackUpdateCallback = window.setInterval(updateTrack, trackDataUpdateInterval);
+            manuallyUpdateTrack();
+            if (!trackUpdateCallback) {
+                trackUpdateCallback = window.setInterval(updateTrack, trackDataUpdateInterval);
+            }
         }
     }
 
     function audioIsNotPlaying(message) {
         console.log("audioIsNotPlaying(\"" + message + "\")");
         clearInterval(trackUpdateCallback);
+        trackUpdateCallback = undefined;
         shouldUpdateTitles = false;
         oldText = $("#now-playing-data").text();
         $("#now-playing-data").text(message);
@@ -531,16 +532,12 @@
     }
 
     function updateTrack() {
-        console.log("updateTrack()")
-        if (currentlyUpdatingTitle) {
-            console.log("we tried to update title while we already were");
-        }
+        // console.log("updateTrack() " + Date.now())
         if (shouldUpdateTitles && !currentlyUpdatingTitle) {
             currentlyUpdatingTitle = true;
-            console.log("We're updating the track data.")
             var theTitle = "";
             // set up the order we want to see these in
-            var orderedMountTrackPreference = ["/audio", "/automation"];
+            var orderedMountTrackPreference = ["audio", "automation"];
             var orderedMountTrackData = [];
             $.each(orderedMountTrackPreference, function(i,v) {
                 orderedMountTrackData.push("");
@@ -548,6 +545,7 @@
 
             // fetch & run thru data
             $.getJSON(statusUrl + "?t" + Date.now(), function(data) {
+                // console.log("Running json request");
                 // if we've just started icecast and only have one
                 // mountpoint, we need to manually make this into an array
                 if (!Array.isArray(data.icestats.source)) {
@@ -558,7 +556,7 @@
                     // find where it falls in the preference list
                     for (var j = 0; j < orderedMountTrackPreference.length; j++) {
                         var w = orderedMountTrackPreference[j];
-                        if (v.listenurl.localeCompare(streamBaseURL + w) == 0) {
+                        if (w.localeCompare(v.listenurl.split("/").pop()) == 0) {
                             // save the data in its ordered place
                             orderedMountTrackData[j] = v.title;
                         }
@@ -578,7 +576,7 @@
                 // replace hyphens with em-dashes
                 // other hyphens you may like: - – — ― ‒ − ﹘
                 theTitle = theTitle.replace(" - ", " — ");
-                console.log("raw data received: " + theTitle);
+                // console.log("raw data received: " + theTitle);
                 // only update data if it has actually changed
                 if (theTitle.localeCompare($("#now-playing-data").text()) != 0) {
                     if (theTitle.localeCompare("") == 0) {
@@ -600,6 +598,7 @@
                 }
             });
             currentlyUpdatingTitle = false;
+            lastTrackDataUpdate = Date.now();
         }
     }
 
