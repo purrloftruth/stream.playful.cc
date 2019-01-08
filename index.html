@@ -105,7 +105,7 @@
         position: absolute;
         top: calc(50% + 72pt);
         left: 50%;
-        transform: translate(-50%, 0); */
+        transform: translate(-50%, 0);
     }
     html.debug.colors div.now-playing {
         background-color: rgba(0,0,255,0.5);
@@ -150,7 +150,7 @@
         -moz-animation-iteration-count: infinite;
         -moz-animation-timing-function: linear;
         -ms-animation-name: spin;
-        -ms-animation-duration: 18000ms;
+        -ms-animation-duration: 1800ms;
         -ms-animation-iteration-count: infinite;
         -ms-animation-timing-function: linear;
     }
@@ -524,7 +524,9 @@
         trackUpdateCallback = undefined;
         shouldUpdateTitles = false;
         oldText = $("#now-playing-data").text();
-        $("#now-playing-data").text(message);
+        if (message) {
+            $("#now-playing-data").text(message);
+        }
     }
     function setVolume() {
         console.log("Volume call " + $("#volume").val());
@@ -696,7 +698,7 @@
         updateLDisplay("waiting");
         $('.b').css("visibility", "hidden");
         $('#b-load').css("visibility", "visible");
-        audioIsNotPlaying("Buffering...");
+        audioIsNotPlaying(null);
     });
     $('#player').bind("abort", function() {
         console.log("abort");
