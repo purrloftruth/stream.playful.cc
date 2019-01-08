@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
 
     <script>
-    var streamBaseURL = "http://icecast-source.i.playful.cc:8000";
+    var streamBaseURL = "//icecast-source.i.playful.cc";
     </script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -578,7 +578,7 @@
                 // replace hyphens with em-dashes
                 // other hyphens you may like: - – — ― ‒ − ﹘
                 theTitle = theTitle.replace(" - ", " — ");
-
+                console.log("raw data received: " + theTitle);
                 // only update data if it has actually changed
                 if (theTitle.localeCompare($("#now-playing-data").text()) != 0) {
                     if (theTitle.localeCompare("") == 0) {
