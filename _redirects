@@ -1,0 +1,5 @@
+# Redirect domain aliases to primary domain
+http://stream.playful.cc/* http://www.playful.cc/:splat 301!
+
+# Optional: Redirect default Netlify subdomain to primary domain
+http://playful-stream.netlify.com/* http://www.playful.cc/:splat 301!
